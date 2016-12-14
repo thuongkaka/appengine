@@ -1,0 +1,5 @@
+<root>
+    <item name='com.linecorp.bot.client.LineMessagingService retrofit2.Call&lt;com.linecorp.bot.model.response.BotApiResponse&gt; replyMessage(com.linecorp.bot.model.ReplyMessage)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

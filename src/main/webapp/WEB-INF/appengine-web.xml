@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+  <application>ltctien-149903</application>
+  <version>1</version>
+  <threadsafe>true</threadsafe>
+  <use-google-connector-j>true</use-google-connector-j>
+  <system-properties>
+    <property name="ae-cloudsql.cloudsql-database-url" value="jdbc:google:mysql://ltctien-149903:asia-northeast1:sample-project/OHQ-test?user=root&amp;password=123456789&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+    <property name="ae-cloudsql.local-database-url" value="jdbc:mysql://104.198.85.105:3306/OHQ-test?user=root&amp;password=123456789&amp;loginTimeout=30&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+  </system-properties>
+</appengine-web-app>

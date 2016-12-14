@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8" />
+<title>Chart Sample Page - My ASP.NET Application</title>
+<link rel="stylesheet" type="text/css" href="content/bootstrap-theme.min.css" />
+<link rel="stylesheet" type="text/css" href="content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="content/PagedList.css" />
+<link rel="stylesheet" type="text/css" href="content/Site.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<!-- Page js's library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+<script src="scripts/_references.js"></script>
+<script src="scripts/bootstrap.min.js"></script>
+<script src="scripts/modernizr-2.8.3.js"></script>
+<script src="scripts/respond.min.js"></script>
+<script src="scripts/respond.matchmedia.addListener.min.js"></script>
+<!-- Local Styles & Scripts-->
+
+<style type="text/css">
+    .wrap-container {
+        margin: 0;
+    }
+
+    .chart-area {
+        width: 770px;
+        height: 100%;
+        background-color: #f9f9f9;
+    }
+
+    .filter-conditions {
+        margin: 0;
+        padding: 0;
+    }
+
+        .filter-conditions li {
+            font-size: 90%;
+            list-style: none;
+            display: inline-block;
+            padding: 10px;
+        }
+
+            .filter-conditions li p {
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+    #imgLoading {
+        display: none;
+        padding: 3px;
+    }
+    #imgLoading img {
+        width: 24px;
+        height: 24px;
+    }
+</style>
+</head>
+<body>
+<div class="layout-header">
+    <div class="navbar navbar-default navbar-fixed-top" style="background: #4e5d6c;">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="../" class="navbar-brand">Portals</a>
+                <a class="navbar-brand" href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main"
+                        aria-expanded="true">
+                    <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar">
+                </span>
+                </button>
+
+            </div>
+            <div class="navbar-collapse collapse in" id="navbar-main" aria-expanded="true" >
+
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="/Account">
+                        <i class="fa fa-puzzle-piece" aria-hidden="true"></i> Administration
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Home">
+                        <i class="fa fa-puzzle-piece" aria-hidden="true"></i> Privacy
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Report">
+                        <i class="fa fa-puzzle-piece" aria-hidden="true"></i> Reports
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/Setting">
+                        <i class="fa fa-user" aria-hidden="true"></i> Full Name Of User
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Authenticate/SignOut">
+                        <i class="fa fa-sign-out" aria-hidden="true"></i> Sign Out
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div style="background-color: #2b3e50; height: 10px; width: 100%; position: absolute; top: 40px;">
+    </div>
+    <div class="float-clear">
+    </div>
+</div>
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <br />
+        <ul class="block-menu">
+            <li class="block-title">Quick Access</li>
+            <li class="break-line"></li>
+            <li><a href="#">Register</a></li>
+            <li><a href="#">Permission</a></li>
+        </ul>
+        <br />
+        <ul class="block-menu">
+            <li class="block-title">Dashboard</li>
+            <li class="break-line"></li>
+            <li><a href="/Account" area = "Dashboard">Account</a></li>
+            <li><a href="/Role" area = "Dashboard">Role</a></li>
+            <li><a href="/Permission" area = "Dashboard">Permission</a></li>
+            <li><a href="/History" area = "Dashboard">History</a></li>
+            <li><a href="/Tracking" area = "Dashboard">Tracking</a></li>
+            <li><a href="/Setting" area = "Dashboard">Setting</a></li>
+            <li><a href="/Database" area = "Dashboard">Database</a></li>
+            <li><a href="/Event" area = "Dashboard">Event</a></li>
+        </ul>
+    </div>
+    <!-- /#sidebar-wrapper -->
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <!-- HTML content -->
+        <div class="wrap-container">
+            <div class="chart-area">
+                <ul class="filter-conditions">
+                    <li>
+                        <p>User Id</p><input id="txtUserId" type="text" class="form-control input-sm" value="123123" />
+                    </li>
+                    <li><p>User Name</p><input id="txtUserName" type="text" class="form-control input-sm" value="" readonly /></li>
+                    <li><p>Date</p><input id="btnPreviousWeek" disabled type="button" class="btn btn-default btn-sm" value="<" /><span id="show-times" style="padding: 0 10px 0 10px; font-weight: bold">2016/10/16 ~ 2016/10/22</span><input id="btnNextWeek" type="button" class="btn btn-default btn-sm" value=">" /></li>
+                </ul>
+                <div style="height:30px;display:block;">
+                    <p id="show_error" style="padding: 10px 25px;text-align: center;color: red;font-weight: bold;"> </p>
+                    <div id="imgLoading" style="position: relative; width: 0px; z-index: 2000000000; left: 350px; top: 200px;">
+                        <!--<img alt="Loading..." src="~/Content/Images/loading.gif" />-->
+                    </div>
+
+                </div>
+                <hr />
+                <canvas id="canvas"></canvas>
+                <hr />
+                <p id="show-times-missing" style="padding: 0 15px;text-align: center;">今週の不足睡眠時間<b>0.00</b>時間</p>
+            </div>
+        </div>
+        <div class="float-clear"></div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+<!-- Menu Toggle Script -->
+<script>
+    $("#menu-toggle").click(function (e) {
+
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
+<script type="text/javascript">
+    var barChartData = {
+        labels: [],
+        datasets: [
+            {
+                type: 'line',
+                label: 'スッキリ度実績',
+                fill: false,
+                lineTension: 0,
+                backgroundColor: "rgb(255,192,0)",
+                borderColor: "rgb(255,192,0)",
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                pointBorderColor: "rgb(255,192,0)",
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 10,
+                pointHoverRadius: 1,
+                pointStyle: 'triangle',
+                pointHoverBackgroundColor: "rgb(255,192,0)",
+                pointHoverBorderColor: "rgb(255,192,0)",
+                pointHoverBorderWidth: 1,
+                pointRadius: 1,
+                pointHitRadius: 1,
+                data: []
+            },
+            {
+                type: 'bar',
+                label: '睡眠時間実績',
+                borderColor: "rgb(5,121,9)",
+                backgroundColor: "rgb(5,121,9)",
+                data: []
+            },
+            {
+                type: 'bar',
+                label: 'おすすめ睡眠時間',
+                backgroundColor: 'rgb(0, 0, 255)',
+                borderColor: 'rgb(0, 0, 255)',
+                data: []
+            }
+        ]
+    };
+    var opts = {
+        lines: 11, // The number of lines to draw
+        length: 15, // The length of each line
+        width: 10, // The line thickness
+        radius: 30, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        direction: 1, // 1: clockwise, -1: counterclockwise
+        color: '#000', // #rgb or #rrggbb
+        speed: 0.6, // Rounds per second
+        trail: 60, // Afterglow percentage
+        shadow: false, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'spinner', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: 'auto', // Top position relative to parent in px
+        left: 'auto' // Left position relative to parent in px
+    };
+
+
+    window.onload = function () {
+
+        var ctx = document.getElementById("canvas").getContext("2d");
+        //new Chart(ctx).LineAlt(data);
+        window.myBar = new window.Chart(ctx, {
+            type: 'bar',
+            data: barChartData,
+            options: {
+                // Elements options apply to all of the options unless overridden in a dataset
+                // In this case, we are setting the border of each bar to be 2px wide and green
+                elements: {
+                    rectangle: {
+                        borderWidth: 1,
+                        borderSkipped: 'bottom'
+                    },
+                    points: {
+                        pointStyle: 'triangle'
+                    }
+                },
+                responsive: true,
+                legend: {
+                    position: 'right'
+                },
+                title: {
+                    display: true,
+                    text: '週間おススメ睡眠プラン'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            max: 10,
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    };
+
+</script>
+<script type="text/javascript">
+
+    // global variable
+    var currentDate;
+    // page loaded
+    //var target
+    var spinner = null;
+    var spinner_div = 0;
+
+    $(document).ready(function () {
+        var webServiceURL = 'https://e-centaur-149608.appspot-preview.com/';
+
+        //var spinner_div = $('#imgLoading').get(0);
+        spinner_div = $('#imgLoading').get(0);
+        spinner = new Spinner(opts).spin(spinner_div);
+
+        // Disable to select date button
+        toggleDateButtons(false);
+
+        // load chart when page loaded
+        currentDate = new Date;
+
+        getUsername($('#txtUserId').val(), webServiceURL, function (userId, username) {
+            // Ser user name
+            $('#txtUserName').val(username);
+
+            // Enable two buttons to select time
+            toggleDateButtons(true);
+
+            // Load default sleeping time
+            getSleepingTime(calculateDate(), userId, webServiceURL);
+        });
+
+
+        // click btn Prev Week
+        $('#btnPreviousWeek').off('click').on('click', function () {
+
+            //
+            spinner.spin(spinner_div);
+            getSleepingTime(calculateDate(false), $('#txtUserId').val(), webServiceURL);
+        });
+
+        // click btn Next week
+        $('#btnNextWeek').off('click').on('click', function () {
+            //
+            spinner.spin(spinner_div);
+            getSleepingTime(calculateDate(true), $('#txtUserId').val(), webServiceURL);
+        });
+        /*
+         // on textbox userId has changed
+         var timeoutId = -1;
+         $('#txtUserId').on('keyup', function () {
+         if (timeoutId >= 0) {
+         clearTimeout(timeoutId);
+         timeoutId = -1;
+         }
+         timeoutId = setTimeout(function () {
+         toggleDateButtons(false);
+         emptyChart();
+         // Get username by UserID
+         getUsername($('#txtUserId').val(), webServiceURL, function (userId, username) {
+         // Set user name
+         $('#txtUserName').val(username);
+
+         // Enable two buttons
+         toggleDateButtons(true);
+
+         // Load sleeping time
+         getSleepingTime(calculateDate(), userId, webServiceURL);
+         });
+         //async(getUsername($('#txtUserId').val(), webServiceURL), getSleepingTime(calculateDate(), $('#txtUserId').val(), webServiceURL));
+         //
+         }, 350);
+         });
+         */
+        $('#txtUserId').on('change', function () {
+
+            toggleDateButtons(false);
+            emptyChart();
+            spinner.spin(spinner_div);
+            // Get username by UserID
+            getUsername($('#txtUserId').val(), webServiceURL, function (userId, username) {
+                // Set user name
+                $('#txtUserName').val(username);
+
+                // Enable two buttons
+                toggleDateButtons(true);
+
+                // Load sleeping time
+                getSleepingTime(calculateDate(), userId, webServiceURL);
+            });
+
+        });
+
+    });
+
+    // calculate for previous/next week
+    function calculateDate(bNext) {
+
+        console.log(bNext);
+
+        if (bNext == undefined) {
+            // get next week date
+            return new Date(window.currentDate);
+        } else {
+
+            if (bNext === true) {
+
+                // get next week date
+                return new Date(+new Date(window.currentDate) + 7 * 1000 * 60 * 60 * 24);
+            }
+
+            // get prev week date
+            return new Date(+new Date(window.currentDate) - 7 * 1000 * 60 * 60 * 24);
+        }
+    }
+
+    //
+    function emptyChart() {
+        barChartData.labels = [];
+        barChartData['datasets'][0]['data'] = [];
+        barChartData['datasets'][1]['data'] = [];
+        barChartData['datasets'][2]['data'] = [];
+        window.myBar.update();
+    }
+    //
+    function getFirstDateOfWeek(currentTimeStamp, current) {
+
+        var firstdayOfWeekTimeStamp = currentTimeStamp - current.getDay() * 1000 * 60 * 60 * 24; // First day is the day of the month - the day of the week
+        var firstdayOfWeek = new Date(firstdayOfWeekTimeStamp);
+
+        return firstdayOfWeek.getFullYear() + '-' + (firstdayOfWeek.getMonth() + 1) + '-' + firstdayOfWeek.getDate();
+    }
+
+    //
+    function getLastDateOfWeek(currentTimeStamp, current) {
+
+        //
+        var firstdayOfWeekTimeStamp = currentTimeStamp - current.getDay() * 1000 * 60 * 60 * 24; // First day is the day of the month - the day of the week
+
+        //
+        var lastdayOfWeekTimeStamp = firstdayOfWeekTimeStamp + 6 * 1000 * 60 * 60 * 24; // last day is the first day + 6
+        var lastdayOfWeek = new Date(lastdayOfWeekTimeStamp);
+
+        return lastdayOfWeek.getFullYear() + '-' + (lastdayOfWeek.getMonth() + 1) + '-' + lastdayOfWeek.getDate();
+    }
+
+
+    // get Sleeping times
+    function getSleepingTime(curr, userId, webServiceURL) {
+
+        //
+        //$('#imgLoading').show();
+        //
+        var currentTimeStamp = +new Date(curr);
+        var current = new Date(curr);
+        var fromDate = getFirstDateOfWeek(currentTimeStamp, current);
+        var toDate = getLastDateOfWeek(currentTimeStamp, current);
+
+        //
+        $("#show-times").text(fromDate + ' ~ ' + toDate);
+        window.currentDate = curr;
+
+        //
+        $.ajax({
+            type: 'GET',
+            url: webServiceURL + 'api/sleepTime/' + userId + '/' + fromDate + '/' + toDate + '/',
+            dataType: "json",
+            crossDomain: true,
+            success: function (response) {
+
+                if (barChartData.datasets.length > 0) {
+
+                    if ((response['returnCode']) === 200) {
+                        // length Data
+                        var size = 0;
+
+                        // add label
+                        var sleepMissing = 0;
+
+                        //barChartData.label.
+                        var sa = new Array();
+                        var as = new Array();
+                        var foreCast = new Array();
+
+                        barChartData.labels = [];
+                        barChartData['datasets'][0]['data'] = [];
+                        barChartData['datasets'][1]['data'] = [];
+                        barChartData['datasets'][2]['data'] = [];
+
+                        $.each(response.datas, function (undex, data) {
+                            size++;
+                            // edit date to "10/16 (日)" type
+                            var dateofweek = new Date(data.date);
+                            barChartData.labels.push((dateofweek.getMonth() + 1) + '/' + dateofweek.getDate() + getDayOfWeek(dateofweek.getDay()));
+
+                            // add array  sa,as,foreCast
+                            as.push(data.as);
+                            sa.push(data.sa / 3600);
+                            foreCast.push((data.forecast) / 3600);
+
+                            if (data.as > 0) {
+                                barChartData['datasets'][0]['data'].push(data.as);
+                                sleepMissing = sleepMissing + ((data.forecast - data.sa) / 3600);
+                            }else{
+                                barChartData['datasets'][0]['data'].push(data.as);
+                            }
+
+                            barChartData['datasets'][1]['data'].push((data.sa / 3600).toFixed(2));
+                            barChartData['datasets'][2]['data'].push((data.forecast / 3600).toFixed(2));
+                        });
+                        if (size > 0) {
+                            window.myBar.update();
+                            $('#show_error').html("");
+                        } else {
+                            window.myBar.update();
+                            $('#show_error').html("この週にはデータがありません。");
+                        }
+                        $('#show-times-missing').html('今週の不足睡眠時間<b>' + sleepMissing.toFixed(2) + '</b>時間');
+                        spinner.stop(spinner_div);
+                        // $('#imgLoading').hide();
+                    } else {
+                        //$('#imgLoading').hide();
+                        $('#show_error').html(response.errors[0].error + response['errors'].parameter);
+                        spinner.stop(spinner_div);
+                    }
+                }
+            },
+            error: function (request, status, error) {
+                //$('#imgLoading').hide();
+                alert(error);
+            }
+        });
+    }
+
+    // Get username by UserID
+    function getUsername(userId, webServiceURL, callback) {
+        $('#show_error').html("");
+        $('#imgLoading').show();
+        $.ajax({
+            type: 'GET',
+            url: webServiceURL + 'api/sleepTime/' + userId + '/',
+            useDefaultXhrHeader: false,
+            dataType: "json",
+            crossDomain: true,
+            success: function (response) {
+                //$('#imgLoading').hide();
+                console.log(response['name']);
+                if (response['name'] !="") {
+                    if (callback) {
+                        callback(userId, response['name']); // response = username
+                    }
+                } else {
+                    $('#show_error').html("このユーザーが存在ありません。");
+                    $('#txtUserName').val("");
+                    $('#txtUserId').focus();
+                    spinner.stop(spinner_div);
+                }
+            },
+            error: function (request, status, error) {
+                //$('#imgLoading').hide();
+                $('#show_error').html("このユーザーが存在ありません。");
+                $('#txtUserName').val("");
+                spinner.stop(spinner_div);
+            }
+        });
+    }
+
+    // get day of week
+    function getDayOfWeek(num) {
+        switch (num) {
+            case 0:
+                return " (日)";
+            case 1:
+                return " (月)";
+            case 2:
+                return " (火)";
+            case 3:
+                return " (水)";
+            case 4:
+                return " (木)";
+            case 5:
+                return " (金)";
+            case 6:
+                return " (土)";
+        }
+
+        return "n/a";
+    }
+
+    // Function to toggle date button status
+    function toggleDateButtons(enabled) {
+        if (enabled) {
+            $('#btnPreviousWeek').removeAttr('disabled');
+            $('#btnNextWeek').removeAttr('disabled');
+        } else {
+            $('#btnPreviousWeek').attr('disabled', true);
+            $('#btnNextWeek').attr('disabled', true);
+        }
+    }
+</script>
+</body>
+
+</html>
